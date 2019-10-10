@@ -28,25 +28,32 @@ function pingBotWithGet() {
     })
     botReq.end(JSON.stringify(body));
 }
+
 function sendMessage(text) {
     let message = text;
-    
+    let response;
     let command = false
-
+    switch (message.text) {
+        case "!test":
+            command = true;
+            response = "This is working.";
+            break;
+        case "!stinky":
+            command = true;
+            response = "Someone needs to shower.";
+            break;
+    }
     const options = {
         hostname: 'api.groupme.com',
         path: '/v3/bots/post',
         method: 'POST'
     }
-    
-    if (message.text === "!test") {
-        command = true;
-    }
+
     
     if (command) {
         const body = {
             "bot_id": process.env.BOT_ID,
-            "text": "The test is working"
+            "text": response
         }
         const botReq = https.request(options, res => {
             console.log('works')
