@@ -28,12 +28,39 @@ function pingBotWithGet() {
     })
     botReq.end(JSON.stringify(body));
 }
-
+function sarcastic(str) {
+    str = str.toLowerCase();
+    str = str.split('');
+  
+    for (let i = 0; i < str.length - 1; i++) {
+      let rand = Math.floor((Math.random() * 10) + 1);
+      if (rand < 5) {
+       str[i] = str[i].toUpperCase();
+      }
+    }
+    str = str.join('')
+    return str;
+  }
 function sendMessage(text) {
     let message = text;
     let response;
     let command = false
+    if (message.name === "Brendan Meehan") {
+        let sarcasticResponse = sarcastic(message.text)
+        const body = {
+            "bot_id": process.env.BOT_ID,
+            "text": sarcasticResponse
+        }
+        const botReq = https.request(options, res => {
+            console.log('works')
+        })
+        botReq.end(JSON.stringify(body));
+        break;
+    }
     switch (message.text) {
+        case "!bot":
+            command = true;
+            response = "Current commands: !test, !stinky"
         case "!test":
             command = true;
             response = "This is working.";
