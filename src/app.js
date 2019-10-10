@@ -45,18 +45,7 @@ function sendMessage(text) {
     let message = text;
     let response;
     let command = false
-    if (message.name === "Brendan Meehan") {
-        let sarcasticResponse = sarcastic(message.text)
-        const body = {
-            "bot_id": process.env.BOT_ID,
-            "text": sarcasticResponse
-        }
-        const botReq = https.request(options, res => {
-            console.log('works')
-        })
-        botReq.end(JSON.stringify(body));
-        break;
-    }
+    
     switch (message.text) {
         case "!bot":
             command = true;
