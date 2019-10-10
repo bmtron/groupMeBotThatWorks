@@ -30,17 +30,20 @@ function pingBotWithGet() {
 }
 function sendMessage(text) {
     let message = text;
+    
     let command = false
+
+    const options = {
+        hostname: 'api.groupme.com',
+        path: '/v3/bots/post',
+        method: 'POST'
+    }
+    
     if (message.text === "!test") {
         command = true;
     }
     
     if (command) {
-        const options = {
-            hostname: 'api.groupme.com',
-            path: '/v3/bots/post',
-            method: 'POST'
-        }
         const body = {
             "bot_id": process.env.BOT_ID,
             "text": "The test is working"
