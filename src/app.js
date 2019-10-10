@@ -5,9 +5,11 @@ const cors = require('cors')
 const helmet = require('helmet')
 const { NODE_ENV } = require('./config')
 const https = require('https')
+const axios = require('axios')
 const app = express()
 const jsonParser = express.json()
 const morganOption = (NODE_ENV === 'production' ? 'tiny' : 'common')
+
 
 app.use(morgan(morganOption))
 app.use(cors())
@@ -41,15 +43,35 @@ function sarcastic(str) {
     str = str.join('')
     return str;
   }
+  function getMeme() {
+      let meme;
+      let subs = ['BikiniBottomTwitter', 'dankmemes', 'PrequelMemes', 'lotrmemes']
+      let randomSub = Math.floor(Math.random() * 4) + 1;
+      let randomPost = Math.floor(Math.random() * 25) + 1;
+      axios.get(`http://www.reddit.com/r/${subs[randomSub]}/new.json?sort=hot`)
+      .then(response => {
+        
+          meme = response.data.data.children[randomPost].data.url
+          
+          return meme
+      }).catch(error => {
+          console.log(error)
+      })
+  }
 function sendMessage(text) {
     let message = text;
     let response;
     let command = false
-    
+    let meme = false;
     switch (message.text) {
+        case "!memes":
+            meme = true;
+            response = getMeme();
+            break;
         case "!bot":
             command = true;
             response = "Current commands: !test, !stinky"
+            break;
         case "!test":
             command = true;
             response = "This is working.";
@@ -59,13 +81,13 @@ function sendMessage(text) {
             response = "Someone needs to shower.";
             break;
     }
+ 
     const options = {
         hostname: 'api.groupme.com',
         path: '/v3/bots/post',
         method: 'POST'
     }
 
-    
     if (command) {
         const body = {
             "bot_id": process.env.BOT_ID,
@@ -77,7 +99,29 @@ function sendMessage(text) {
         botReq.end(JSON.stringify(body));
     }
     
-    console.log(command)
+    if (meme) {
+        let meme;
+      let subs = ['BikiniBottomTwitter', 'dankmemes', 'PrequelMemes', 'lotrmemes']
+      let randomSub = Math.floor(Math.random() * 4) + 1;
+      let randomPost = Math.floor(Math.random() * 25) + 1;
+      axios.get(`http://www.reddit.com/r/${subs[randomSub]}/new.json?sort=hot`)
+      .then(response => {
+        
+          meme = response.data.data.children[randomPost].data.url
+          const body = {
+            "bot_id": process.env.BOT_ID,
+            "text": meme
+        }
+        const botReq = https.request(options, res => {
+            console.log('works')
+        })
+        botReq.end(JSON.stringify(body));
+          
+      }).catch(error => {
+          console.log(error)
+      })
+    }
+    
 }
 app.get('/', (req, res) => {
     pingBotWithGet()
